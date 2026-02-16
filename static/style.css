@@ -1,0 +1,160 @@
+body {
+    background: url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1600")
+                no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+
+
+.container-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+h1 {
+    color: #ff6b00;
+    font-weight: bold;
+    text-shadow: none;
+}
+
+
+.btn-primary {
+    background-color: #ff6b00;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #e65c00;
+}
+
+
+.cart-box {
+    background: rgba(255, 248, 220, 0.95);
+    border-radius: 12px;
+}
+
+
+.footer {
+    margin-top: 40px;
+    text-align: center;
+    color: gray;
+}
+.overlay {
+    background: linear-gradient(
+        rgba(0, 0, 0, 0.55),
+        rgba(0, 0, 0, 0.35)
+    );
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+h3 {
+    color: #333;
+    font-weight: 600;
+}
+
+.card {
+    border-radius: 16px;
+    border: none;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+
+.card-title {
+    color: #222;
+    font-weight: 600;
+}
+
+.card-text {
+    color: #555;
+}
+
+.section-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+.cart-container {
+    max-width: 350px;          /* smaller width */
+    margin: auto;
+    background: rgba(255,255,255,0.95);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+.cart-container ul {
+    max-height: 200px;         /* scroll if many items */
+    overflow-y: auto;
+}
+
+.cart-container li {
+    font-size: 14px;
+    padding: 4px 0;
+}
+/* ---------- Login & Payment Backgrounds ---------- */
+
+.login-bg {
+    background: url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600")
+                no-repeat center center fixed;
+    background-size: cover;
+}
+
+.payment-bg {
+    background: url("https://images.unsplash.com/photo-1521017432531-fbd92d768814?q=80&w=1600")
+                no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* ---------- Centered Box ---------- */
+
+.center-box {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ---------- Glass Card ---------- */
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 35px;
+    border-radius: 18px;
+    width: 320px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(8px);
+}
+/* ===== Admin Enhancements ===== */
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.92);
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    backdrop-filter: blur(10px);
+}
+
+.login-bg {
+    background: url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1600")
+                no-repeat center center fixed;
+    background-size: cover;
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="login-bg">
+
+<div class="container mt-5">
+
+    <!-- Title -->
+    <h2 class="text-center text-white mb-4">👨‍🍳 Admin Dashboard</h2>
+    <div class="row mb-4 text-center">
+  <div class="col-md-6">
+    <div class="glass-card">
+      <h4>📦 Total Orders</h4>
+      <h2>{{ total_orders }}</h2>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="glass-card">
+      <h4>💰 Total Revenue</h4>
+      <h2>₹{{ revenue }}</h2>
+    </div>
+  </div>
+</div>
+<div class="text-center mb-4">
+  <a href="/admin/orders" class="btn btn-warning">
+    View All Orders
+  </a>
+</div>
+
+
+    <!-- Add Food Form -->
+    <div class="glass-card mb-4">
+        <h4 class="mb-3">➕ Add New Food Item</h4>
+
+        <form method="post">
+            <input type="text" name="name" class="form-control mb-2"
+                   placeholder="Food name" required>
+
+            <input type="number" name="price" class="form-control mb-2"
+                   placeholder="Price" required>
+
+            <input type="text" name="image" class="form-control mb-3"
+                   placeholder="Image URL" required>
+
+            <button class="btn btn-success w-100">Add Item</button>
+        </form>
+    </div>
+
+    <!-- Food List -->
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-4 mb-3">
+            <div class="glass-card text-center">
+
+                <!-- Food image -->
+                <img src="{{ item.image }}" class="img-fluid rounded mb-2"
+                     style="height:150px; object-fit:cover; width:100%;">
+
+                <!-- Name & price -->
+                <h5>{{ item.name }}</h5>
+                <p class="text-muted">₹{{ item.price }}</p>
+
+                <!-- Delete button -->
+                <a href="/delete/{{ item._id }}" class="btn btn-danger btn-sm">
+                    Delete
+                </a>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Back button -->
+    <div class="text-center mt-4">
+        <a href="/" class="btn btn-light">⬅ Back to Menu</a>
+    </div>
+
+</div>
+
+</body>
+</html>

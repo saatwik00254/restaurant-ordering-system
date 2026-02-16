@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body class="bg-light">
+    <!-- ===== NAVBAR START ===== -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+
+    <!-- Restaurant name -->
+    <a class="navbar-brand" href="/">🍽 Restaurant</a>
+
+    <!-- Mobile toggle button -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+
+        {% if user %}
+          <!-- Show when user logged in -->
+          <li class="nav-item">
+            <a class="nav-link">Hi, {{ user }}</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/orders">My Orders</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/admin">Admin</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
+
+        {% else %}
+          <!-- Show when user NOT logged in -->
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Login</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/register">Register</a>
+          </li>
+        {% endif %}
+
+      </ul>
+    </div>
+  </div>
+</nav>
+<!-- ===== NAVBAR END ===== -->
+
+    <div class="overlay">
+
+
+<div class="container mt-4">
+
+    <h1 class="text-center mb-4">🍽 Restaurant Ordering System</h1>
+
+    <div class="text-end mb-3">
+        {% if user %}
+            <span class="me-2">Welcome, <b>{{ user }}</b></span>
+            <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+        {% else %}
+            <a href="/login" class="btn btn-primary btn-sm">Login</a>
+            <a href="/register" class="btn btn-success btn-sm">Register</a>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <form method="get" action="/" class="mb-3">
+  <input type="text" name="q" placeholder="Search food..."
+         class="form-control">
+</form>
+
+        <!-- Menu -->
+        <div class="col-md-6 section-box">
+
+            <h3>Menu</h3>
+            <ul class="list-group">
+                <div class="row">
+                    {% for item in items %}
+  <div class="col-md-4 mb-3">
+    <div class="card h-100 shadow">
+      <img src="{{ item.image }}" class="card-img-top" height="150">
+
+
+      <div class="card-body text-center">
+        <h5 class="card-title">{{ item.name }}</h5>
+        <p class="card-text">₹{{ item.price }}</p>
+        <p>
+{% for i in range(1,6) %}
+  <a href="/rate/{{ item._id }}/{{ i }}" style="text-decoration:none;">
+    {% if item.rating and i <= item.rating %}
+      ⭐
+    {% else %}
+      ☆
+    {% endif %}
+  </a>
+{% endfor %}
+</p>
+
+
+        <a href="/add_to_cart/{{ item._id }}" class="btn btn-primary btn-sm">
+          Add to Cart
+        </a>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+
+            </ul>
+        </div>
+
+        <!-- Cart -->
+        <div class="col-md-4">
+  <div class="cart-container">
+    <h4>Your Cart</h4>
+
+    <ul class="list-unstyled">
+      {% for c in cart %}
+        <li>• {{ c }}</li>
+      {% endfor %}
+    </ul>
+
+    {% if cart %}
+      <a href="/payment" class="btn btn-success w-100 mt-2">
+        Proceed to Payment
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+    </div>
+
+</div>
+</div>
+
+<div class="footer">
+    <p>© 2026 Restaurant Ordering System | Developed using Flask & MongoDB</p>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
