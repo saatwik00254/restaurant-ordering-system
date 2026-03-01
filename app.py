@@ -1,18 +1,122 @@
+import razorpay
 from flask import Flask, render_template, request, redirect, session
+from flask import jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+
+
+
+# MongoDB connection
+from pymongo import MongoClient
+import certifi
+
 
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# MongoDB connection
-client = MongoClient("mongodb://localhost:27017/")
+
+MONGO_URI = "mongodb+srv://restaurantUser:Restaurant123@cluster0.zcwuusa.mongodb.net/restaurantDB?retryWrites=true&w=majority"
+
+client = MongoClient(
+    MONGO_URI,
+    tlsCAFile=certifi.where()
+)
 
 db = client["restaurantDB"]
 
 menu_collection = db["menu"]
 orders_collection = db["orders"]
 users_collection = db["users"]
+
+
+
+# ---------- AUTO INSERT MENU ITEMS ----------
+
+# ---------- AUTO INSERT MENU ITEMS ----------
+
+import base64
+
+def seed_menu():
+
+    menu_collection.delete_many({})
+
+    items = [
+
+        {
+            "name": "Margherita Pizza",
+            "price": 199,
+            "image": "https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg",
+            "rating": 4.5
+        },
+        {
+            "name": "Cheese Burger",
+            "price": 149,
+            "image": "https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg",
+            "rating": 4.7
+        },
+        {
+            "name": "Masala Dosa",
+            "price": 99,
+            "image": "https://images.pexels.com/photos/5560763/pexels-photo-5560763.jpeg",
+            "rating": 4.4
+        },
+        {
+            "name": "White Sauce Pasta",
+            "price": 179,
+            "image": "https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg",
+            "rating": 4.6
+        },
+        {
+            "name": "Chocolate Ice Cream",
+            "price": 89,
+            "image": "https://images.pexels.com/photos/1352278/pexels-photo-1352278.jpeg",
+            "rating": 4.8
+        },
+        {
+            "name": "French Fries",
+            "price": 79,
+            "image": "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg",
+            "rating": 4.3
+        },
+        {
+            "name": "Chicken Biryani",
+            "price": 249,
+            "image": "https://images.pexels.com/photos/9609838/pexels-photo-9609838.jpeg",
+            "rating": 4.9
+        },
+        {
+            "name": "Cold Coffee",
+            "price": 129,
+            "image": "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg",
+            "rating": 4.2
+        },
+        {
+            "name": "Chocolate Cake",
+            "price": 159,
+            "image": "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg",
+            "rating": 4.7
+        }
+    ]
+
+    menu_collection.insert_many(items)
+
+    print("✅ Real food images inserted successfully!")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @app.route("/")
@@ -28,7 +132,17 @@ def home():
 
     cart = session.get("cart", [])
     user = session.get("user")
-    return render_template("index.html", items=items, cart=cart, user=user)
+
+    # calculate total
+    total = sum(item["price"] * item["qty"] for item in cart)
+
+    return render_template(
+        "index.html",
+        items=items,
+        cart=cart,
+        user=user,
+        total=total
+    )
 
 
 
@@ -79,22 +193,32 @@ def logout():
 
 @app.route("/add_to_cart/<item_id>")
 def add_to_cart(item_id):
-    from bson.objectid import ObjectId
 
-    # find item safely
     item = menu_collection.find_one({"_id": ObjectId(item_id)})
 
-    # if item missing → just go home (no crash)
     if item is None:
         return redirect("/")
 
-    # create cart if not exists
-    if "cart" not in session:
-        session["cart"] = []
+    cart = session.get("cart", [])
 
-    # append safely
-    session["cart"].append(item["name"])
+    found = False
 
+    # increase quantity if already exists
+    for c in cart:
+        if c["name"] == item["name"]:
+            c["qty"] += 1
+            found = True
+            break
+
+    # add new item
+    if not found:
+        cart.append({
+            "name": item["name"],
+            "price": item["price"],
+            "qty": 1
+        })
+
+    session["cart"] = cart
     return redirect("/")
 
 
@@ -176,18 +300,24 @@ def payment():
     return render_template("payment.html")
 
 
-@app.route("/confirm_payment")
+@app.route("/confirm_payment", methods=["POST"])
 def confirm_payment():
+
+    method = request.form["method"]
     cart = session.get("cart", [])
+
     if cart:
         orders_collection.insert_one({
             "user": session["user"],
             "items": cart,
-            "status": "Paid"
+            "payment_method": method,
+            "payment_status": "Success",
+            "order_status": "Preparing"
         })
-        session["cart"] = []
-    return redirect("/")
 
+        session["cart"] = []
+
+    return render_template("payment_success.html")
 
 @app.route("/rate/<item_id>/<int:rating>")
 def rate(item_id, rating):
@@ -209,10 +339,77 @@ def orders():
     return render_template("orders.html", orders=user_orders)
 
 
+@app.route("/api/menu")
+def api_menu():
+    items = list(menu_collection.find())
+
+    for item in items:
+        item["_id"] = str(item["_id"])
+
+    return jsonify(items)
+
+
+
+
+
+
+@app.route("/test")
+def test():
+    return "API WORKING"
+
+# ---------- PAYMENT WEB SERVICE ----------
+
+@app.route("/api/payment", methods=["POST"])
+def api_payment():
+
+    data = request.json
+
+    order_id = orders_collection.insert_one({
+        "user": data["user"],
+        "items": data["items"],
+        "payment_method": data["method"],
+        "payment_status": "Success",
+        "order_status": "Preparing"
+    }).inserted_id
+
+    return jsonify({
+        "message": "Payment Successful",
+        "order_id": str(order_id)
+    })
+
+
+@app.route("/api/payment_status/<order_id>")
+def payment_status(order_id):
+
+    order = orders_collection.find_one({"_id": ObjectId(order_id)})
+
+    if order:
+        return jsonify({
+            "payment_status": order.get("payment_status", "Pending")
+        })
+
+    return jsonify({"payment_status": "Not Found"})
+
+
+
+
+@app.route("/remove_item/<name>")
+def remove_item(name):
+
+    cart = session.get("cart", [])
+
+    cart = [item for item in cart if item["name"] != name]
+
+    session["cart"] = cart
+
+    return redirect("/")
+
+
 
 
 
 
 
 if __name__ == "__main__":
+    seed_menu()   # 👈 AUTO LOAD MENU
     app.run(host="0.0.0.0", port=5000, debug=True)

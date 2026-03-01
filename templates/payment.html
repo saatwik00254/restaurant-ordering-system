@@ -25,7 +25,20 @@
         <a href="/" class="btn btn-secondary w-100">
             Cancel
         </a>
+        <h2>Secure Payment Gateway</h2>
 
+<form action="/confirm_payment" method="POST">
+
+    <label>Select Payment Method:</label><br><br>
+
+    <input type="radio" name="method" value="UPI" required> UPI<br>
+    <input type="radio" name="method" value="Card"> Debit/Credit Card<br>
+    <input type="radio" name="method" value="NetBanking"> Net Banking<br>
+    <input type="radio" name="method" value="COD"> Cash on Delivery<br><br>
+
+    <button type="submit">Proceed to Pay</button>
+
+</form>
     </div>
 </div>
 
