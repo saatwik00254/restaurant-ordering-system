@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, session
 from flask import jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-
+import os
 
 
 # MongoDB connection
@@ -15,8 +15,8 @@ app = Flask(__name__)
 app.secret_key = "secret123"
 
 
-MONGO_URI = "mongodb+srv://restaurantUser:Restaurant123@cluster0.zcwuusa.mongodb.net/restaurantDB?retryWrites=true&w=majority"
 
+MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(
     MONGO_URI,
     tlsCAFile=certifi.where()
